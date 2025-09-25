@@ -159,7 +159,7 @@ class ScalekitProvider(RemoteAuthProvider):
             try:
                 async with httpx.AsyncClient() as client:
                     response = await client.get(
-                        f"{self.environment_url}/resources/{self.resource_id}/.well-known/oauth-authorization-server"
+                        f"{self.environment_url}/.well-known/oauth-authorization-server/resources/{self.resource_id}"
                     )
                     response.raise_for_status()
                     metadata = response.json()
