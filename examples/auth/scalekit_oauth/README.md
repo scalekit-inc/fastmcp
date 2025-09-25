@@ -42,8 +42,8 @@ SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
 SCALEKIT_CLIENT_ID=sk_client_123
 SCALEKIT_RESOURCE_ID=sk_resource_456
 
-# Server URL (optional, defaults to http://localhost:8000)
-# SERVER_BASE_URL=http://localhost:8000
+# MCP Server URL (optional, defaults to http://localhost:8000/mcp)
+# SCALEKIT_MCP_URL=http://localhost:8000/mcp
 ```
 
 ### 3. Install Dependencies
