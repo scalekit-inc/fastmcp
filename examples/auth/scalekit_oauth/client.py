@@ -28,9 +28,9 @@ async def main():
             result = await client.call_tool("echo", {"message": "Hello from Scalekit!"})
             print(f"🎯 Echo result: {result}")
 
-            # Test calling user info tool
-            user_info = await client.call_tool("get_user_info", {})
-            print(f"👤 User info: {user_info}")
+            # Test calling auth status tool
+            auth_status = await client.call_tool("auth_status", {})
+            print(f"👤 Auth status: {auth_status}")
 
     except Exception as e:
         print(f"❌ Authentication failed: {e}")

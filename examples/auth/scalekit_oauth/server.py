@@ -20,7 +20,7 @@ auth = ScalekitProvider(
     environment_url=os.getenv("SCALEKIT_ENVIRONMENT_URL") or "https://your-env.scalekit.com",
     client_id=os.getenv("SCALEKIT_CLIENT_ID") or "",
     resource_id=os.getenv("SCALEKIT_RESOURCE_ID") or "",
-    base_url="http://localhost:8000",
+    mcp_url=os.getenv("SCALEKIT_MCP_URL", "http://localhost:8000/mcp")
 )
 
 mcp = FastMCP("Scalekit OAuth Example Server", auth=auth)
@@ -33,8 +33,8 @@ def echo(message: str) -> str:
 
 
 @mcp.tool
-def get_user_info() -> dict:
-    """Get information about the authenticated user."""
+def auth_status() -> dict:
+    """Show Scalekit authentication status."""
     # In a real implementation, you would extract user info from the JWT token
     return {
         "message": "This tool requires authentication via Scalekit",
