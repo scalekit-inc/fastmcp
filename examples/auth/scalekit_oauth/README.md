@@ -32,24 +32,20 @@ The Scalekit OAuth provider enables authentication using Scalekit's OAuth 2.0 an
    - Set up your SSO connection (SAML, OIDC, or OAuth provider)
    - Configure the connection for your organization
 
-### 2. Environment Variables
-
-Create a `.env` file in this directory:
+### 2. Set Environment Variables
 
 ```bash
 # Required Scalekit credentials
-SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com
-SCALEKIT_CLIENT_ID=sk_client_123
-SCALEKIT_RESOURCE_ID=sk_resource_456
-
-# MCP Server URL (optional, defaults to http://localhost:8000/mcp)
-# SCALEKIT_MCP_URL=http://localhost:8000/mcp
+export SCALEKIT_ENVIRONMENT_URL="https://your-env.scalekit.com"
+export SCALEKIT_CLIENT_ID="sk_123"
+export SCALEKIT_RESOURCE_ID="res_456"
+export SCALEKIT_MCP_URL="http://localhost:8000/mcp"
 ```
 
 ### 3. Install Dependencies
 
 ```bash
-cd /Users/ravimadabhushi/Documents/fastmcp
+cd /path/to/fastmcp
 uv sync
 ```
 
@@ -147,7 +143,6 @@ FileTokenStorage.clear_all()
 
 ## Security Notes
 
-- Never commit `.env` files with real credentials
 - Use HTTPS in production
 - Rotate client secrets regularly
 - Monitor Scalekit logs for unusual activity
