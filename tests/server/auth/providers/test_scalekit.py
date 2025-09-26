@@ -22,13 +22,13 @@ class TestScalekitProvider:
             environment_url="https://my-env.scalekit.com",
             client_id="sk_client_123",
             resource_id="sk_resource_456",
-            base_url="https://myserver.com",
+            mcp_url="https://myserver.com",
         )
 
         assert provider.environment_url == "https://my-env.scalekit.com"
         assert provider.client_id == "sk_client_123"
         assert provider.resource_id == "sk_resource_456"
-        assert str(provider.base_url) == "https://myserver.com/"
+        assert str(provider.mcp_url) == "https://myserver.com/"
 
     def test_init_with_env_vars(self):
         """Test ScalekitProvider initialization from environment variables."""
@@ -36,9 +36,9 @@ class TestScalekitProvider:
             os.environ,
             {
                 "FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_ENVIRONMENT_URL": "https://env-scalekit.com",
-                "FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_CLIENT_ID": "sk_client_env_123",
-                "FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_RESOURCE_ID": "sk_resource_env_456",
-                "FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_BASE_URL": "https://envserver.com",
+                "FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_CLIENT_ID": "skc_123",
+                "FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_RESOURCE_ID": "res_456",
+                "FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_MCP_URL": "https://envserver.com/mcp",
             },
         ):
             provider = ScalekitProvider()
@@ -46,7 +46,7 @@ class TestScalekitProvider:
             assert provider.environment_url == "https://env-scalekit.com"
             assert provider.client_id == "sk_client_env_123"
             assert provider.resource_id == "sk_resource_env_456"
-            assert str(provider.base_url) == "https://envserver.com/"
+            assert str(provider.mcp_url) == "https://envserver.com/"
 
     def test_environment_variable_loading(self):
         """Test that environment variables are loaded correctly."""
@@ -54,13 +54,13 @@ class TestScalekitProvider:
             environment_url="https://test-env.scalekit.com",
             client_id="sk_client_test_123",
             resource_id="sk_resource_test_456",
-            base_url="http://test-server.com",
+            mcp_url="http://test-server.com",
         )
 
         assert provider.environment_url == "https://test-env.scalekit.com"
         assert provider.client_id == "sk_client_test_123"
         assert provider.resource_id == "sk_resource_test_456"
-        assert str(provider.base_url) == "http://test-server.com/"
+        assert str(provider.mcp_url) == "http://test-server.com/"
 
     def test_url_trailing_slash_handling(self):
         """Test that URLs handle trailing slashes correctly."""
@@ -68,11 +68,11 @@ class TestScalekitProvider:
             environment_url="https://my-env.scalekit.com/",
             client_id="sk_client_123",
             resource_id="sk_resource_456",
-            base_url="https://myserver.com/",
+            mcp_url="https://myserver.com/",
         )
 
         assert provider.environment_url == "https://my-env.scalekit.com"
-        assert str(provider.base_url) == "https://myserver.com/"
+        assert str(provider.mcp_url) == "https://myserver.com/"
 
     def test_jwt_verifier_configured_correctly(self):
         """Test that JWT verifier is configured correctly."""
@@ -80,7 +80,7 @@ class TestScalekitProvider:
             environment_url="https://my-env.scalekit.com",
             client_id="sk_client_123",
             resource_id="sk_resource_456",
-            base_url="https://myserver.com",
+            mcp_url="https://myserver.com",
         )
 
         # Check that JWT verifier uses the correct endpoints
@@ -99,7 +99,7 @@ class TestScalekitProvider:
             environment_url="https://my-env.scalekit.com",
             client_id="sk_client_123",
             resource_id="sk_resource_456",
-            base_url="https://myserver.com",
+            mcp_url="https://myserver.com",
         )
 
         assert len(provider.authorization_servers) == 1
@@ -112,7 +112,7 @@ def run_mcp_server(host: str, port: int) -> None:
             environment_url="https://test-env.scalekit.com",
             client_id="sk_client_test_123",
             resource_id="sk_resource_test_456",
-            base_url="http://localhost:4321",
+            mcp_url="http://localhost:4321",
         )
     )
 

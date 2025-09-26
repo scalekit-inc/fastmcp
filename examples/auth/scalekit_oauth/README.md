@@ -4,33 +4,25 @@ This example demonstrates how to use the Scalekit OAuth provider with FastMCP se
 
 ## Overview
 
-The Scalekit OAuth provider enables authentication using Scalekit's OAuth 2.0 and OpenID Connect services. It provides enterprise-grade authentication with support for SSO connections and user management. FastMCP acts as a protected resource server that validates access tokens issued by Scalekit's authorization server.
+The Scalekit OAuth provider enables authentication using Scalekit's OAuth 0 and OpenID Connect services. It provides enterprise-grade authentication with support for SSO connections and user management. FastMCP acts as a protected resource server that validates access tokens issued by Scalekit's authorization server.
 
 ## Setup
 
 ### 1. Scalekit Configuration
 
-1. **Create a Scalekit Environment**:
-   - Go to [Scalekit Admin Portal](https://scalekit.com/admin)
-   - Create a new environment or use an existing one
-   - Note your environment URL (e.g., `https://your-env.scalekit.com`)
+**Get Your Credentials**
+1. Visit the [Scalekit Dashboard](https://app.scalekit.com/)
+2. Go to **Developers** → **Settings**
+3. Copy the following values:
+   - Environment URL
+   - Client ID  
+   - Client Secret
 
-2. **Create an OAuth Application**:
-   - In your Scalekit environment, navigate to Applications
-   - Create a new OAuth application
-   - Configure redirect URIs for your OAuth flow
-   - For this example: `http://localhost:8000/auth/callback`
-   - Copy your `Client ID`
-
-3. **Create a Resource Server**:
-   - Navigate to Resources section in Scalekit Admin
-   - Create a new Resource with appropriate scopes
-   - Note the `Resource ID`
-
-4. **Set up SSO Connection** (optional for enterprise SSO):
-   - Go to Connections section
-   - Set up your SSO connection (SAML, OIDC, or OAuth provider)
-   - Configure the connection for your organization
+**Register Your MCP Server**
+1. Navigate to **MCP Servers** section
+2. Click **Create New Server**
+3. Fill in your MCP server details
+4. Save and note the **Resource ID** (e.g., `res_123`)
 
 ### 2. Set Environment Variables
 
@@ -39,7 +31,7 @@ The Scalekit OAuth provider enables authentication using Scalekit's OAuth 2.0 an
 export SCALEKIT_ENVIRONMENT_URL="https://your-env.scalekit.com"
 export SCALEKIT_CLIENT_ID="sk_123"
 export SCALEKIT_RESOURCE_ID="res_456"
-export SCALEKIT_MCP_URL="http://localhost:8000/mcp"
+export MCP_URL="http://localhost:8000/mcp"
 ```
 
 ### 3. Install Dependencies
@@ -58,7 +50,7 @@ uv sync
 uv run python server.py
 ```
 
-The server will start on `http://localhost:8000` with Scalekit OAuth authentication enabled.
+The server will start on `http://localhost:8000/mcp` with Scalekit OAuth authentication enabled.
 
 ### Test with Client
 
@@ -102,20 +94,19 @@ The client will:
 
 ## Key Features
 
-- **Enterprise SSO**: Works with any Scalekit SSO connection
+- **Universal Authentication Support**: Works with any OAuth, OIDC, SAML connection and can even co-exist with your existing auth system
 - **JWT Validation**: Validates tokens using Scalekit's public keys
 - **Token Caching**: Reuses tokens across sessions
-- **Resource Server Pattern**: Follows OAuth 2.0 resource server specifications
+- **Resource Server Pattern**: Follows OAuth 2.1 resource server specifications
 - **Error Handling**: Graceful handling of auth failures and token expiration
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **"Invalid client" error**: Check CLIENT_ID and RESOURCE_ID
-2. **"Token validation failed"**: Check ENVIRONMENT_URL and token scope
-3. **"Redirect URI mismatch"**: Ensure redirect URL matches Scalekit settings
-4. **Browser doesn't open**: Check firewall settings for localhost
+1. **"Token validation failed"**: Inspect the token on your server in debug mode and perform JWT decode to see if any value in the token mismatches with what you have saved in your environment variables
+2. **MCP Inspector CORS issues**: If you are using mcp-inspector and face CORS issues, go to your Scalekit dashboard, add your MCP server URL under Authentication -> Redirect URLs -> Allowed callback URLs -> Add URL (add your MCP inspector URL here http://localhost:6274/)
+3. **Browser doesn't open**: Check firewall settings for localhost
 
 ### Debug Mode
 
@@ -145,14 +136,13 @@ FileTokenStorage.clear_all()
 
 - Use HTTPS in production
 - Rotate client secrets regularly
-- Monitor Scalekit logs for unusual activity
-- Set appropriate token expiration times
+- Monitor Scalekit's Auth logs for unusual activity
+- Set appropriate token expiry time
 - Validate token scopes and claims in your application
 
 ## Next Steps
 
-- Explore Scalekit Directory Sync for user provisioning
-- Set up multi-organization support
 - Implement role-based access control
 - Add custom scopes and claims validation
-- Integrate with Scalekit's audit logs
+- Set up multi-organization support
+- Get auth-visibility with Scalekit's Auth logs

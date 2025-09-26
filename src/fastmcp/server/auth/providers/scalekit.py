@@ -1,7 +1,7 @@
 """Scalekit authentication provider for FastMCP.
 
 This module provides ScalekitProvider - a complete authentication solution that integrates
-with Scalekit's OAuth 2.0 and OpenID Connect services, supporting Resource Server
+with Scalekit's OAuth 2.1 and OpenID Connect services, supporting Resource Server
 authentication for seamless MCP client authentication.
 """
 
@@ -37,7 +37,7 @@ class ScalekitProviderSettings(BaseSettings):
 
 
 class ScalekitProvider(RemoteAuthProvider):
-    """Scalekit resource server provider for OAuth 2.0 authentication.
+    """Scalekit resource server provider for OAuth 2.1 authentication.
 
     This provider implements Scalekit integration using resource server pattern.
     FastMCP acts as a protected resource server that validates access tokens issued
@@ -52,19 +52,14 @@ class ScalekitProvider(RemoteAuthProvider):
        - Ensure the Resource Identifier matches exactly what you configure as MCP URL
        - Note the Resource ID
 
-    2. Configure OAuth Client:
-       - Create an OAuth client application in Scalekit
-       - Configure redirect URIs and allowed scopes
-       - Note the Client ID and Client Secret
-
-    3. Environment Configuration:
+    2. Environment Configuration:
        - Set SCALEKIT_ENVIRONMENT_URL (e.g., https://your-env.scalekit.com)
        - Set SCALEKIT_CLIENT_ID from your OAuth application
        - Set SCALEKIT_RESOURCE_ID from your created resource
-       - Set SCALEKIT_MCP_URL to your FastMCP server's public URL
+       - Set MCP_URL to your FastMCP server's public URL
 
     For detailed setup instructions, see:
-    https://docs.scalekit.com/mcp/oauth/
+    https://docs.scalekit.com/mcp/overview/
 
     Example:
         ```python

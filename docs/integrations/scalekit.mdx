@@ -20,17 +20,25 @@ Before you begin, you will need:
 
 1. A [Scalekit account](https://app.scalekit.com/)
 2. Your **Environment URL** and **Client ID** from the Scalekit Dashboard (e.g., `https://your-env.scalekit.com`)
-4. A configured **MCP Server** with Resource ID
-5. Your FastMCP server's URL (can be localhost for development, e.g., `http://localhost:3000`)
+4. A configured **MCP Server** with Resource ID (eg. `res_123`)
+5. Your FastMCP server's URL (can be localhost for development, e.g., `http://localhost:8000/mcp`)
 
 ### Step 1: Configure Scalekit
 
 <Steps>
-<Step title="Register Resource Server">
-    1. In the Scalekit Dashboard, navigate to **MCP Servers**
-    2. Register your MCP Server with appropriate scopes
-    3. Ensure that the Resource Identifier configured in Scalekit Dashboard matches exactly as your MCP Server Base URL
-    4. Note the **Resource ID**
+<Step title="Get Your Credentials">
+    1. Go to **Developers** → **Settings**
+    2. Copy the following values:
+       - Environment URL
+       - Client ID
+       - Client Secret
+</Step>
+
+<Step title="Register Your MCP Server">
+    1. Navigate to **MCP Servers** section
+    2. Click **Create New Server**
+    3. Fill in your MCP server details
+    4. Save and note the **Resource ID** (e.g., `res_123`)
 
     <Warning>
     The Resource ID is required for FastMCP to validate tokens against the correct resource server.
@@ -44,9 +52,9 @@ Create a `.env` file with your Scalekit configuration:
 
 ```bash
 SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com  # Your Scalekit environment URL
-SCALEKIT_CLIENT_ID=skc_client_123                       # Your OAuth client ID
-SCALEKIT_RESOURCE_ID=res_21212122222                   # Your resource server ID
-SERVER_URL=http://localhost:3000                       # Your server's base URL
+SCALEKIT_CLIENT_ID=skc_123                              # Your OAuth client ID
+SCALEKIT_RESOURCE_ID=res_21212122222                    # Your resource server ID
+MCP_URL=http://localhost:8000/mcp                       # Your server's URL
 ```
 
 <Note>
@@ -67,45 +75,35 @@ auth_provider = ScalekitProvider(
     environment_url=SCALEKIT_ENVIRONMENT_URL,    # Your Scalekit environment URL
     client_id=SCALEKIT_CLIENT_ID,                # Your OAuth client ID
     resource_id=SCALEKIT_RESOURCE_ID,            # Your resource server ID
-    base_url=SERVER_URL,                         # Your server's public URL (used as audience)
+    mcp_url=SERVER_URL,                         # Your server's public URL (used as audience)
 )
 
 # Create FastMCP server with auth
 mcp = FastMCP(name="My Scalekit Protected Server", auth=auth_provider)
 
 @mcp.tool
-def get_user_profile() -> dict:
-    """Get authenticated user profile information."""
-    return {"message": "This tool requires Scalekit authentication"}
+def auth_status() -> dict:
+    """Show Scalekit authentication status."""
+    # In a real implementation, you would extract user info from the JWT token
+    return {
+        "message": "This tool requires authentication via Scalekit",
+        "authenticated": True,
+        "provider": "Scalekit"
+    }
 
 ```
 
 ## Testing
 
-To test your server, you can use the `fastmcp` CLI to run it locally. Assuming you've saved the above code to `server.py` (after replacing the configuration values with your actual Scalekit settings!), you can run the following command:
+### Start Your Server
+
+Run your FastMCP server:
 
 ```bash
-fastmcp run server.py --transport http --port 8000
+uv run python server.py
 ```
 
-Now, you can use a FastMCP client to test that you can reach your server after authenticating:
-
-```python
-from fastmcp import Client
-import asyncio
-
-async def main():
-    async with Client("http://localhost:8000/mcp/", auth="oauth") as client:
-        assert await client.ping()
-        print("Successfully authenticated with Scalekit!")
-
-        # Call protected tools
-        tools = await client.list_tools()
-        print(f"Available tools: {[tool.name for tool in tools]}")
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
+Now, you can use any MCP client to connect to your FastMCP server asuch as mcp-inspector, Claude, VSCode, Windsurf, or any compatible MCP client. Once your server is running, connect with your preferred client and verify that authentication works as expected.
 
 ## Environment Variables
 
@@ -138,8 +136,8 @@ Your Scalekit OAuth application client ID from the Applications section
 Your Scalekit resource server ID from the Resources section
 </ParamField>
 
-<ParamField path="FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_BASE_URL" required>
-Public URL of your FastMCP server (e.g., `https://your-server.com` or `http://localhost:8000` for development)
+<ParamField path="FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_MCP_URL" required>
+Public URL of your FastMCP server (e.g., `https://your-server.com` or `http://localhost:8000/mcp` for development)
 </ParamField>
 </Card>
 
@@ -151,9 +149,9 @@ FASTMCP_SERVER_AUTH=fastmcp.server.auth.providers.scalekit.ScalekitProvider
 
 # Scalekit configuration
 FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_ENVIRONMENT_URL=https://your-env.scalekit.com
-FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_CLIENT_ID=sk_client_123
-FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_RESOURCE_ID=sk_resource_456
-FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_BASE_URL=https://your-server.com
+FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_CLIENT_ID=skc_123
+FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_RESOURCE_ID=res_456
+FASTMCP_SERVER_AUTH_SCALEKITPROVIDER_MCP_URL=https://your-server.com/mcp
 ```
 
 With environment variables set, your server code simplifies to:
@@ -208,17 +206,10 @@ The ScalekitProvider automatically:
 
 - Tokens are validated using Scalekit's public keys
 - All communication uses HTTPS in production
-- Token scopes and claims can be inspected and validated
+- Token scopes and claims can be validated
 - Authentication logs available in Scalekit Dashboard
 
 ## Troubleshooting
-
-### Common Issues
-
-1. **"Invalid client" error**: Verify `SCALEKIT_CLIENT_ID` and `SCALEKIT_RESOURCE_ID` match your Scalekit configuration
-2. **"Token validation failed"**: Check that `SCALEKIT_ENVIRONMENT_URL` is correct and accessible
-3. **"Redirect URI mismatch"**: Ensure redirect URLs in your OAuth app match your client configuration
-4. **"Audience validation failed"**: Verify `SERVER_BASE_URL` matches the URL clients use to access your server
 
 ### Debug Mode
 
