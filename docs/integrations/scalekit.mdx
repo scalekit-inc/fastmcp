@@ -144,50 +144,15 @@ def protected_action() -> str:
     return "Access granted via Scalekit!"
 ```
 
-## Features
+## Capabilities
 
-### OAuth 2.1 with Dynamic Client Registration
+Scalekit supports OAuth 2.1 with Dynamic Client Registration for MCP clients and enterprise SSO, and provides built‑in JWT validation and security controls.
 
-Scalekit provides full OAuth 2.1 support with Dynamic Client Registration (DCR), enabling:
+**OAuth 2.1/DCR**: clients self‑register, use PKCE, and work with the Remote OAuth pattern without pre‑provisioned credentials.
 
-- **Automatic Client Registration**: MCP clients can register themselves without manual configuration
-- **PKCE Security**: Proof Key for Code Exchange for enhanced security in authorization flows
-- **Seamless Authentication**: No need for pre-configured client credentials or manual app setup
-- **Modern Standards**: Full compliance with OAuth 2.1 and OpenID Connect specifications
+**Validation and SSO**: tokens are verified (keys, RS256, issuer, audience, expiry), and SAML, OIDC, OAuth 2.0, ADFS, Azure AD, and Google Workspace are supported; use HTTPS in production and review auth logs as needed.
 
-This DCR support is what enables Scalekit to work with the [**Remote OAuth**](/servers/auth/remote-oauth) pattern, providing the smoothest possible authentication experience for MCP clients.
-
-### Enterprise SSO Support
-
-Scalekit supports various enterprise SSO providers out of the box:
-
-- SAML 2.0
-- OpenID Connect (OIDC)
-- OAuth 2.0
-- Active Directory Federation Services (ADFS)
-- Azure AD
-- Google Workspace
-- And many more
-
-### JWT Token Validation
-
-The ScalekitProvider automatically:
-
-- Fetches Scalekit's public keys for token verification
-- Validates token signatures using RS256
-- Checks token issuer and audience claims
-- Handles token expiration
-
-### Security Best Practices
-
-- Tokens are validated using Scalekit's public keys
-- All communication uses HTTPS in production
-- Token scopes and claims can be validated
-- Authentication logs available in Scalekit Dashboard
-
-## Troubleshooting
-
-### Debug Mode
+## Debugging
 
 Enable detailed logging to troubleshoot authentication issues:
 
@@ -196,7 +161,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 
-### Token Inspection
+### Token inspection
 
 You can inspect JWT tokens in your tools to understand the user context:
 
