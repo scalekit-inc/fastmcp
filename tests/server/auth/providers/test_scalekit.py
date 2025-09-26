@@ -22,7 +22,7 @@ class TestScalekitProvider:
             environment_url="https://my-env.scalekit.com",
             client_id="sk_client_123",
             resource_id="sk_resource_456",
-            mcp_url="https://myserver.com",
+            mcp_url="https://myserver.com/",
         )
 
         assert provider.environment_url == "https://my-env.scalekit.com"
@@ -44,9 +44,9 @@ class TestScalekitProvider:
             provider = ScalekitProvider()
 
             assert provider.environment_url == "https://env-scalekit.com"
-            assert provider.client_id == "sk_client_env_123"
-            assert provider.resource_id == "sk_resource_env_456"
-            assert str(provider.mcp_url) == "https://envserver.com/"
+            assert provider.client_id == "skc_123"
+            assert provider.resource_id == "res_456"
+            assert str(provider.mcp_url) == "https://envserver.com/mcp"
 
     def test_environment_variable_loading(self):
         """Test that environment variables are loaded correctly."""
@@ -80,7 +80,7 @@ class TestScalekitProvider:
             environment_url="https://my-env.scalekit.com",
             client_id="sk_client_123",
             resource_id="sk_resource_456",
-            mcp_url="https://myserver.com",
+            mcp_url="https://myserver.com/",
         )
 
         # Check that JWT verifier uses the correct endpoints
@@ -91,7 +91,7 @@ class TestScalekitProvider:
         assert (
             provider.token_verifier.issuer == "https://my-env.scalekit.com"  # type: ignore[attr-defined]
         )
-        assert provider.token_verifier.audience == "https://myserver.com"  # type: ignore[attr-defined]
+        assert provider.token_verifier.audience == "https://myserver.com/"  # type: ignore[attr-defined]
 
     def test_authorization_servers_configuration(self):
         """Test that authorization servers are configured correctly."""
@@ -99,7 +99,7 @@ class TestScalekitProvider:
             environment_url="https://my-env.scalekit.com",
             client_id="sk_client_123",
             resource_id="sk_resource_456",
-            mcp_url="https://myserver.com",
+            mcp_url="https://myserver.com/",
         )
 
         assert len(provider.authorization_servers) == 1
