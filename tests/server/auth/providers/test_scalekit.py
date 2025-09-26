@@ -103,7 +103,10 @@ class TestScalekitProvider:
         )
 
         assert len(provider.authorization_servers) == 1
-        assert str(provider.authorization_servers[0]) == "https://my-env.scalekit.com/resources/sk_resource_456"
+        assert (
+            str(provider.authorization_servers[0])
+            == "https://my-env.scalekit.com/resources/sk_resource_456"
+        )
 
 
 def run_mcp_server(host: str, port: int) -> None:
