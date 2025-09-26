@@ -20,7 +20,7 @@ auth = ScalekitProvider(
     environment_url=os.getenv("SCALEKIT_ENVIRONMENT_URL") or "https://your-env.scalekit.com",
     client_id=os.getenv("SCALEKIT_CLIENT_ID") or "",
     resource_id=os.getenv("SCALEKIT_RESOURCE_ID") or "",
-    mcp_url=os.getenv("SCALEKIT_MCP_URL", "http://localhost:8000/mcp")
+    mcp_url=os.getenv("MCP_URL", "http://localhost:8000/mcp")
 )
 
 mcp = FastMCP("Scalekit OAuth Example Server", auth=auth)
