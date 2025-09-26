@@ -10,58 +10,41 @@ import { VersionBadge } from "/snippets/version-badge.mdx"
 
 <VersionBadge version="2.12.5" />
 
-This guide shows you how to secure your FastMCP server using [**Scalekit**](https://scalekit.com), an enterprise-grade authentication and user management platform. This integration uses the [**Remote OAuth**](/servers/auth/remote-oauth) pattern, where Scalekit handles user authentication and your FastMCP server validates the tokens.
+
+Install auth stack to your FastMCP server with [Scalekit](https://scalekit.com) using the [Remote OAuth](/servers/auth/remote-oauth) pattern: Scalekit handles user authentication, and the MCP server validates issued tokens.
 
 ## Configuration
 
 ### Prerequisites
 
-Before you begin, you will need:
+Before you begin
 
-1. A [Scalekit account](https://app.scalekit.com/)
-2. Your **Environment URL** and **Client ID** from the Scalekit Dashboard (e.g., `https://your-env.scalekit.com`)
-4. A configured **MCP Server** with Resource ID (eg. `res_123`)
-5. Your FastMCP server's URL (can be localhost for development, e.g., `http://localhost:8000/mcp`)
+1. Get a [Scalekit account](https://app.scalekit.com/) and grab API credentails such as **Client ID**, **Client Secret** and **Environment URL** from _Dashboard > Developers > Settings_.
+2. Have your FastMCP server's endpoint ready (can be localhost for development, e.g., `http://localhost:8000/mcp`)
 
-### Step 1: Configure Scalekit
+### Step 1: Configure MCP server in Scalekit environment
 
 <Steps>
-<Step title="Get Your Credentials">
-    1. Go to **Developers** → **Settings**
-    2. Copy the following values:
-       - Environment URL
-       - Client ID
-       - Client Secret
-</Step>
+<Step title="Register MCP server and set environment">
 
-<Step title="Register Your MCP Server">
-    1. Navigate to **MCP Servers** section
-    2. Click **Create New Server**
-    3. Fill in your MCP server details
-    4. Save and note the **Resource ID** (e.g., `res_123`)
+In your Scalekit dashboard:
+    1. Open the **MCP Servers** section, then select **Create new server**
+    2. Enter server details: a name, a resource identifier, and the desired MCP client authentication settings
+    3. Save, then copy the **Resource ID** (for example, res_92015146095)
 
-    <Warning>
-    The Resource ID is required for FastMCP to validate tokens against the correct resource server.
-    </Warning>
+In your FastMCP project's `.env`:
+
+```sh
+SCALEKIT_ENVIRONMENT_URL=<YOUR_APP_ENVIRONMENT_URL>
+SCALEKIT_CLIENT_ID=<YOUR_APP_CLIENT_ID> # skc_7008EXAMPLE46
+SCALEKIT_RESOURCE_ID=<YOUR_APP_RESOURCE_ID> # res_926EXAMPLE5878
+MCP_URL=http://localhost:8000/mcp
+```
+
 </Step>
 </Steps>
 
-### Step 2: Environment Setup
-
-Create a `.env` file with your Scalekit configuration:
-
-```bash
-SCALEKIT_ENVIRONMENT_URL=https://your-env.scalekit.com  # Your Scalekit environment URL
-SCALEKIT_CLIENT_ID=skc_123                              # Your OAuth client ID
-SCALEKIT_RESOURCE_ID=res_21212122222                    # Your resource server ID
-MCP_URL=http://localhost:8000/mcp                       # Your server's URL
-```
-
-<Note>
-Replace the example values with your actual Scalekit configuration from the Scalekit Dashboard.
-</Note>
-
-### Step 3: FastMCP Configuration
+### Step 2: Add auth to FastMCP server
 
 Create your FastMCP server file and use the ScalekitProvider to handle all the OAuth integration automatically:
 
@@ -69,13 +52,12 @@ Create your FastMCP server file and use the ScalekitProvider to handle all the O
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.scalekit import ScalekitProvider
 
-# The ScalekitProvider automatically discovers Scalekit endpoints
-# and configures JWT token validation
+# Discovers Scalekit endpoints and set up JWT token validation
 auth_provider = ScalekitProvider(
-    environment_url=SCALEKIT_ENVIRONMENT_URL,    # Your Scalekit environment URL
-    client_id=SCALEKIT_CLIENT_ID,                # Your OAuth client ID
-    resource_id=SCALEKIT_RESOURCE_ID,            # Your resource server ID
-    mcp_url=SERVER_URL,                         # Your server's public URL (used as audience)
+    environment_url=SCALEKIT_ENVIRONMENT_URL,    # Scalekit environment URL
+    client_id=SCALEKIT_CLIENT_ID,                # OAuth client ID
+    resource_id=SCALEKIT_RESOURCE_ID,            # Resource server ID
+    mcp_url=SERVER_URL,                          # Is also aud claim
 )
 
 # Create FastMCP server with auth
@@ -84,7 +66,7 @@ mcp = FastMCP(name="My Scalekit Protected Server", auth=auth_provider)
 @mcp.tool
 def auth_status() -> dict:
     """Show Scalekit authentication status."""
-    # In a real implementation, you would extract user info from the JWT token
+    # Extract user claims from the JWT
     return {
         "message": "This tool requires authentication via Scalekit",
         "authenticated": True,
@@ -95,21 +77,15 @@ def auth_status() -> dict:
 
 ## Testing
 
-### Start Your Server
+### Start the MCP server
 
-Run your FastMCP server:
-
-```bash
+```sh
 uv run python server.py
 ```
 
-Now, you can use any MCP client to connect to your FastMCP server asuch as mcp-inspector, Claude, VSCode, Windsurf, or any compatible MCP client. Once your server is running, connect with your preferred client and verify that authentication works as expected.
+Use any MCP client (for example, mcp-inspector, Claude, VS Code, or Windsurf) to connect to the running serve. Verify that authentication succeeds and requests are authorized as expected.
 
-## Environment Variables
-
-For production deployments, use environment variables instead of hardcoding credentials.
-
-### Provider Selection
+### Provider selection
 
 Setting this environment variable allows the Scalekit provider to be used automatically without explicitly instantiating it in code.
 
@@ -119,7 +95,7 @@ Set to `fastmcp.server.auth.providers.scalekit.ScalekitProvider` to use Scalekit
 </ParamField>
 </Card>
 
-### Scalekit-Specific Configuration
+### Scalekit-specific configuration
 
 These environment variables provide default values for the Scalekit provider, whether it's instantiated manually or configured via `FASTMCP_SERVER_AUTH`.
 
@@ -141,7 +117,7 @@ Public URL of your FastMCP server (e.g., `https://your-server.com` or `http://lo
 </ParamField>
 </Card>
 
-Example `.env` file:
+Example `.env`:
 
 ```bash
 # Use the Scalekit provider
